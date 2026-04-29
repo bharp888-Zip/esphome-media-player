@@ -417,7 +417,7 @@
       details.style.display = enabled ? "" : "none";
       badge.className = "on-badge" + (enabled ? " active" : "");
     }));
-    details.appendChild(durationSelectField("Then After", "screen_saver_timeout", [10, 30, 60, 120, 300, 600, 1800], formatCompactDurationSeconds));
+    details.appendChild(durationSelectField("Start Screen Saver After", "screen_saver_timeout", [10, 30, 60, 120, 300, 600, 1800], formatCompactDurationSeconds));
     details.appendChild(divider());
     details.appendChild(screenSaverActionField("Daytime Screen Saver", "day_idle_action", function () {
       badge.textContent = idleSummary();
