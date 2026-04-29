@@ -471,6 +471,16 @@ script:
             id(screen_rotation_select).current_option() == "90" ||
             id(screen_rotation_select).current_option() == "270";
 
+          auto resize_fullscreen_overlay = [](lv_obj_t *obj, lv_coord_t width, lv_coord_t height) {
+            lv_obj_set_pos(obj, 0, 0);
+            lv_obj_set_size(obj, width, height);
+
+            lv_obj_t *content = lv_obj_get_child(obj, 0);
+            if (content != nullptr) {
+              lv_obj_center(content);
+            }
+          };
+
           if (landscape) {
             lv_obj_set_pos(id(artwork_bg_panel), 0, 0);
             lv_obj_set_size(id(artwork_bg_panel), 480, 480);
@@ -487,6 +497,12 @@ script:
             lv_obj_set_width(id(media_progress_bar), 800);
             lv_obj_set_size(id(settings_panel), 800, 480);
             lv_obj_set_size(id(clock_screensaver), 800, 480);
+
+            resize_fullscreen_overlay(id(setup_prompt), 800, 480);
+            resize_fullscreen_overlay(id(actions_prompt), 800, 480);
+            resize_fullscreen_overlay(id(ha_setup_prompt), 800, 480);
+            resize_fullscreen_overlay(id(wifi_setup_prompt), 800, 480);
+            resize_fullscreen_overlay(id(loading_screen), 800, 480);
           } else {
             lv_obj_set_pos(id(artwork_bg_panel), 0, 0);
             lv_obj_set_size(id(artwork_bg_panel), 480, 480);
@@ -503,6 +519,28 @@ script:
             lv_obj_set_width(id(media_progress_bar), 480);
             lv_obj_set_size(id(settings_panel), 480, 800);
             lv_obj_set_size(id(clock_screensaver), 480, 800);
+
+            resize_fullscreen_overlay(id(setup_prompt), 480, 800);
+            resize_fullscreen_overlay(id(actions_prompt), 480, 800);
+            resize_fullscreen_overlay(id(ha_setup_prompt), 480, 800);
+            resize_fullscreen_overlay(id(wifi_setup_prompt), 480, 800);
+            resize_fullscreen_overlay(id(loading_screen), 480, 800);
+          }
+
+          if (!lv_obj_has_flag(id(setup_prompt), LV_OBJ_FLAG_HIDDEN)) {
+            lv_obj_move_foreground(id(setup_prompt));
+          }
+          if (!lv_obj_has_flag(id(actions_prompt), LV_OBJ_FLAG_HIDDEN)) {
+            lv_obj_move_foreground(id(actions_prompt));
+          }
+          if (!lv_obj_has_flag(id(ha_setup_prompt), LV_OBJ_FLAG_HIDDEN)) {
+            lv_obj_move_foreground(id(ha_setup_prompt));
+          }
+          if (!lv_obj_has_flag(id(wifi_setup_prompt), LV_OBJ_FLAG_HIDDEN)) {
+            lv_obj_move_foreground(id(wifi_setup_prompt));
+          }
+          if (!lv_obj_has_flag(id(loading_screen), LV_OBJ_FLAG_HIDDEN)) {
+            lv_obj_move_foreground(id(loading_screen));
           }
           lv_obj_update_layout(lv_scr_act());
 
