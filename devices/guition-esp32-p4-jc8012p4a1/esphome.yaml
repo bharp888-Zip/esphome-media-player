@@ -4,8 +4,8 @@ substitutions:
   friendly_name: "Music Dashboard 10inch"
   # ha_host: "homeassistant.local"  # Home Assistant hostname or IP (change if HA runs on a different host)
   # ha_port: "8123"  # Home Assistant port (change if HA runs on a non-standard port)
-  # Display rotation: 90 (default landscape) or 270 (flipped landscape)
-  # display_rotation: "270"
+  # Display rotation: 0, 90 (default landscape), 180, or 270
+  # display_rotation: "0"
 
 # Wifi Setup
 wifi:

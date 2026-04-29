@@ -618,7 +618,7 @@
   }
 
   function supportsScreenRotation() {
-    return S.device_profile === "guition-esp32-p4-jc4880p443";
+    return S.device_profile === "guition-esp32-p4-jc4880p443" || S.device_profile === "guition-esp32-p4-jc8012p4a1";
   }
 
   function supportsClockScreenSaver() {

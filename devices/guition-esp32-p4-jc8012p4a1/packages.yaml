@@ -1,6 +1,6 @@
 substitutions:
-  # Display rotation: 90 (default landscape) or 270 (flipped landscape)
-  # Flip to 270 if mounting with the power cable on the opposite side
+  # Native LVGL display rotation in degrees. ESPHome 2026.4 rotates touch input
+  # through LVGL too. 90 is the default landscape layout; 0/180 use portrait.
   display_rotation: "90"
 
   # Device profile

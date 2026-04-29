@@ -84,20 +84,24 @@ packages:
 
 ## ESP32-P4 JC8012P4A1
 
-The rectangular display defaults to landscape orientation and supports a 180° flip for alternate mounting. To flip 180°, override `display_rotation`:
+The rectangular display defaults to landscape orientation and supports all four rotations. The layout changes automatically: landscape uses artwork on the left with track details on the right, while portrait uses artwork at the top with track details underneath.
 
 | `display_rotation` |
 | ------------------- |
+| `"0"`               |
 | `"90"` (default)    |
+| `"180"`             |
 | `"270"`             |
 
-### Example: 180-degree rotation
+The device also exposes **Screen Rotation** in Home Assistant as a dropdown with `0`, `90`, `180`, and `270` options.
+
+### Example: portrait rotation
 
 ```yaml
 substitutions:
   name: "music-dashboard-10inch"
   friendly_name: "Music Dashboard 10inch"
-  display_rotation: "270"
+  display_rotation: "0"
 
 wifi:
   ssid: !secret wifi_ssid
