@@ -576,7 +576,7 @@ script:
             - lvgl.pause:
 
   - id: show_clock_view
-    mode: single
+    mode: restart
     then:
       - if:
           condition: lvgl.is_paused
@@ -587,6 +587,10 @@ script:
           id(is_screen_dimmed) = true;
           id(is_clock_showing) = true;
           lv_obj_clear_flag(id(clock_screensaver), LV_OBJ_FLAG_HIDDEN);
+          lv_obj_clear_flag(id(clock_label), LV_OBJ_FLAG_HIDDEN);
+          lv_obj_set_style_bg_opa(id(clock_screensaver), LV_OPA_COVER, 0);
+          lv_obj_set_style_text_opa(id(clock_label), LV_OPA_COVER, 0);
+          lv_obj_set_style_text_color(id(clock_label), lv_color_white(), 0);
           lv_obj_move_foreground(id(clock_screensaver));
           setenv("TZ", id(tz_posix).c_str(), 1);
           tzset();
@@ -607,6 +611,8 @@ script:
           int ox = (minute * 7) % 61 - 30;
           int oy = (minute * 13) % 41 - 20;
           lv_obj_set_pos(id(clock_label), cx + ox - w/2, cy + oy - h/2);
+          lv_obj_invalidate(id(clock_screensaver));
+          lv_obj_invalidate(id(clock_label));
       - lvgl.widget.redraw:
       - light.turn_on:
           id: backlight

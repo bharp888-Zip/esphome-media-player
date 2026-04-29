@@ -532,7 +532,7 @@
   }
 
   function supportsClockScreenSaver() {
-    return S.device_profile !== "guition-esp32-p4-jc8012p4a1";
+    return true;
   }
 
   function textField(label, key, placeholder, validator) {

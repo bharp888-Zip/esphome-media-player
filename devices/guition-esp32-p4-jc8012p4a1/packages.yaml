@@ -21,8 +21,8 @@ substitutions:
   artwork_saturation_boost: "0.0f"
   track_info_duration_default: "0"
   pause_lvgl_on_screen_off: "false"
-  clock_screensaver_supported: "false"
-  idle_action_default: "Turn Screen Off"
+  clock_screensaver_supported: "true"
+  idle_action_default: "Show Clock"
   screen_schedule_internal: "false"
 
   # Setup screens
