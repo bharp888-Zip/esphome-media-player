@@ -177,7 +177,9 @@ esp_ldo:
 # BACKLIGHT CONTROL
 # -----------------------------------------------------------------------------
 # The display backlight is controlled via PWM (pulse width modulation).
-# This allows dimming the screen brightness from 0-100%.
+# This panel's usable PWM range is roughly 70-100%. Below 70% the
+# backlight appears black, so map user-facing brightness into that range
+# while still allowing true off when the light is turned off.
 # This output is used by the backlight component in addon/backlight.yaml
 # -----------------------------------------------------------------------------
 output:
@@ -185,6 +187,8 @@ output:
     id: backlight_output
     pin: GPIO26
     inverted: true
+    min_power: 0.70
+    zero_means_zero: true
 
 
 # -----------------------------------------------------------------------------
