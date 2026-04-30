@@ -117,7 +117,7 @@ packages:
 
 ## ESP32-P4 JC4880P443
 
-The 480x800 portrait display defaults to portrait orientation and supports all four rotations. Use `"180"` if you want the portrait layout flipped upside down. For landscape mounts, use the dedicated layout preset below. It still uses ESPHome 2026.4's native LVGL rotation; the preset just changes the layout values to 800x480 so the portrait UI is not clipped.
+The 480x800 portrait display defaults to portrait orientation and supports all four rotations. Use `"180"` if you want the portrait layout flipped upside down. For landscape mounts, use the dedicated `packages-90.yaml` layout preset. It still uses ESPHome 2026.4's native LVGL rotation; the preset just changes the layout values to 800x480 so the portrait UI is not clipped.
 
 | `display_rotation` |
 | ------------------- |
@@ -147,25 +147,3 @@ packages:
     ref: main
     refresh: 1s
 ```
-
-### Example: landscape rotation
-
-```yaml
-substitutions:
-  name: "music-dashboard-43inch"
-  friendly_name: "Music Dashboard 4.3inch"
-  display_rotation: "90"
-
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-
-packages:
-  music_dashboard:
-    url: https://github.com/jtenniswood/esphome-media-player
-    files: [devices/guition-esp32-p4-jc4880p443/packages-90.yaml]
-    ref: main
-    refresh: 1s
-```
-
-Use `display_rotation: "270"` with the same `packages-90.yaml` preset if you want the landscape layout flipped the other way.
