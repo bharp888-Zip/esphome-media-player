@@ -622,9 +622,23 @@ script:
                   float pct = is_day
                     ? id(backlight_day_brightness).state
                     : id(backlight_night_brightness).state;
+                  if (id(screen_saver_enabled).state) {
+                    std::string action = is_day
+                      ? id(day_idle_action).current_option()
+                      : id(night_idle_action).current_option();
+                    if (${clock_screensaver_supported} && (action == "Clock" || action == "Show Clock" || action == "On") && !(pct > 0.0f)) {
+                      pct = 1.0f;
+                    }
+                  }
                   return pct / 100.0f;
                 transition_length: 3s
-            - delay: !lambda 'return (uint32_t)(id(backlight_off_timeout).state * 1000);'
+            - delay: !lambda |-
+                float dim_s = id(backlight_dim_timeout).state;
+                float saver_s = id(backlight_off_timeout).state;
+                if (!(dim_s > 0.0f)) dim_s = 0.0f;
+                if (!(saver_s > 0.0f)) saver_s = 0.0f;
+                float remaining_s = saver_s - dim_s;
+                return remaining_s > 0.0f ? (uint32_t) (remaining_s * 1000.0f) : 0;
             - if:
                 condition:
                   lambda: >-
@@ -648,6 +662,7 @@ script:
                           std::string action = is_day
                             ? id(day_idle_action).current_option()
                             : id(night_idle_action).current_option();
+                          ESP_LOGI("backlight", "Screen saver action: %s (%s)", action.c_str(), is_day ? "day" : "night");
                           return ${clock_screensaver_supported} && (action == "Clock" || action == "Show Clock" || action == "On");
                       then:
                         - script.execute: show_clock_view
