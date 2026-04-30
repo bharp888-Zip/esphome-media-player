@@ -1,6 +1,6 @@
 # Web Settings
 
-The firmware includes a built-in webserver for configuration and setup. After the device is on your Wi-Fi network, open the device IP address in a browser on the same network to configure it without editing YAML or reflashing.
+The firmware includes a built-in local-only web settings page for basic setup and advanced customization. After the device is on your Wi-Fi network, open the device IP address in a browser on the same network to choose what it controls, tune the display, and adjust behaviour without editing YAML or reflashing.
 
 You can also open the same page from Home Assistant by going to **Settings -> Devices & Services -> ESPHome**, selecting the media player device, and clicking **Visit**.
 
