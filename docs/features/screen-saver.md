@@ -1,6 +1,6 @@
 # Screen Saver
 
-When playback is paused and paused dimming is enabled, the device uses a two-stage screen saver to reduce power consumption and prevent burn-in. All settings are configurable from the device's web settings page at `http://<device-ip>`.
+When playback is paused and paused dimming is enabled, the device uses a two-stage screen saver to reduce power consumption and prevent burn-in. All settings are configurable from the device's web settings page. You can open it by visiting the device IP address directly in your browser, or from the device in Home Assistant under **Settings → Devices & Services → ESPHome** by clicking **Visit**.
 
 ## How it works
 
@@ -42,7 +42,7 @@ By default, the device reads the `sun.sun` entity in Home Assistant (sun above h
 To use your own logic for day vs night:
 
 1. Create a `binary_sensor` or `input_boolean` helper in Home Assistant that reflects your preferred day/night state (`on` = day, `off` = night).
-2. On the device's web settings page at `http://<device-ip>`, enter the entity ID in **Day/Night Source** — for example, `binary_sensor.daytime` or `input_boolean.is_daytime`.
+2. Open the settings page by visiting the device IP address directly in your browser, or go to the device in Home Assistant under **Settings → Devices & Services → ESPHome** and click **Visit**. Enter the entity ID in **Day/Night Source** — for example, `binary_sensor.daytime` or `input_boolean.is_daytime`.
 3. The device will immediately start using the custom sensor instead of `sun.sun`.
 
 To revert to the default sun-based behavior, clear **Day/Night Source**.

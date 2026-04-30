@@ -1,6 +1,6 @@
 # Firmware Updates
 
-The device checks for firmware updates automatically and can install them over-the-air — no USB cable or reflashing needed. Update behavior is fully controllable from the device's web settings page at `http://<device-ip>`.
+The device checks for firmware updates automatically and can install them over-the-air — no USB cable or reflashing needed. Update behavior is fully controllable from the device's web settings page. You can open it by visiting the device IP address directly in your browser, or from the device in Home Assistant under **Settings → Devices & Services → ESPHome** by clicking **Visit**.
 
 
 ## How it works
@@ -27,7 +27,7 @@ All settings are available on the device's web settings page.
 
 If auto-update is disabled, you can update at any time:
 
-1. Open the device's web settings page at `http://<device-ip>`.
+1. Open the settings page by visiting the device IP address directly in your browser, or go to the device in Home Assistant under **Settings → Devices & Services → ESPHome** and click **Visit**.
 2. Press **Check for Update** to check public releases.
 3. If an update is available, the button changes to **Install Update** and shows the latest version.
 4. Click **Install Update** to apply it.

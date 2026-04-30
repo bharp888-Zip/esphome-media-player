@@ -28,7 +28,7 @@ A touchscreen media controller for Home Assistant: album art, track info, and to
 
 ## Features
 
-Overview of what the media controller does. Many features are user-configurable from the device's web settings page at `http://<device-ip>` — no YAML or reflashing needed. See [Settings](/features/settings) for the full reference.
+Overview of what the media controller does. Many features are user-configurable from the device's web settings page — no YAML or reflashing needed. You can open it by visiting the device IP address directly in your browser, or from the device in Home Assistant under **Settings → Devices & Services → ESPHome** by clicking **Visit**. See [Settings](/features/settings) for the full reference.
 
 ### Album art display
 
