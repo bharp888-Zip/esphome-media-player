@@ -1,9 +1,11 @@
 ---
 name: updates
 description: >-
-  Summarize user-facing project updates from the last 7 days. Use when the user
-  says "/updates", asks what changed recently, or wants a concise list of recent
-  features, device support, fixes that users will notice, or other product value.
+  Summarize user-facing project updates from the last 7 days, ordered by
+  importance and written as one-sentence "Feature: description" entries. Use
+  when the user says "/updates", asks what changed recently, or wants a concise
+  list of recent features, device support, fixes that users will notice, or
+  other product value.
 ---
 
 # Recent User-Facing Updates
@@ -54,17 +56,29 @@ Ignore changes that are mostly internal:
 - Test-only changes unless they explain a shipped behavior fix
 - CI-only changes unless they directly affect release availability for users
 
-### 3. Write The Summary
+### 3. Prioritize The Results
+
+Order the final list by user importance, not by commit date. Prefer this order:
+
+1. New or expanded device support
+2. New user-facing features or visible behavior changes
+3. Fixes for problems users could encounter
+4. Setup, installation, update, release, or documentation improvements
+
+Group related commits into one entry when they describe the same user outcome.
+Keep only the most meaningful user-facing changes.
+
+### 4. Write The Summary
 
 Be concise. Return a short list in this format:
 
 ```text
-- Title: One plain-language sentence explaining what it does for users.
+Feature: One plain-language sentence explaining what changed for users.
 ```
 
-Group related commits into one item. Prefer 3-6 bullets, and use fewer if there
-were only a few meaningful user-facing updates. Do not include commit hashes
-unless the user asks for them.
+Each entry must be a single sentence. Prefer 3-6 entries, and use fewer if
+there were only a few meaningful user-facing updates. Do not include commit
+hashes unless the user asks for them.
 
 If there were no meaningful user-facing updates in the last 7 days, say that
 plainly and mention that you ignored internal maintenance changes.
