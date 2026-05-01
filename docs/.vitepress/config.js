@@ -3,23 +3,6 @@ export default {
   title: 'ESPHome Media Player',
   description: 'A media controller for Home Assistant',
   ignoreDeadLinks: true,
-  head: [
-    [
-      'script',
-      {
-        'data-name': 'BMC-Widget',
-        'data-cfasync': 'false',
-        src: 'https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js',
-        'data-id': 'jtenniswood',
-        'data-description': 'Support me on Buy me a coffee!',
-        'data-message': '',
-        'data-color': '#FFDD00',
-        'data-position': 'Right',
-        'data-x_margin': '28',
-        'data-y_margin': '28',
-      },
-    ],
-  ],
   themeConfig: {
     socialLinks: [
       { icon: 'github', link: 'https://github.com/jtenniswood/esphome-media-player' },

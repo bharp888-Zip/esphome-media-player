@@ -33,31 +33,56 @@ For README files, omit `target="_blank"` if the project style does not already u
 </a>
 ```
 
-## VitePress docs floating widget
+## VitePress docs floating button
 
-If the project uses VitePress, add this to `docs/.vitepress/config.js` inside the exported config:
+If the project uses VitePress, add a theme component instead of the third-party widget script so the docs match the webserver button style.
 
-```js
-head: [
-  [
-    'script',
-    {
-      'data-name': 'BMC-Widget',
-      'data-cfasync': 'false',
-      src: 'https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js',
-      'data-id': 'jtenniswood',
-      'data-description': 'Support me on Buy me a coffee!',
-      'data-message': '',
-      'data-color': '#FFDD00',
-      'data-position': 'Right',
-      'data-x_margin': '28',
-      'data-y_margin': '28',
-    },
-  ],
-],
+Create `docs/.vitepress/theme/components/SupportButton.vue`:
+
+```vue
+<template>
+  <a
+    class="sp-support-btn"
+    href="https://www.buymeacoffee.com/jtenniswood"
+    target="_blank"
+    rel="noopener"
+  >
+    <img
+      src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+      alt="Buy Me A Coffee"
+      height="60"
+    >
+  </a>
+</template>
 ```
 
-If `head` already exists, add the script entry to the existing array instead of replacing the rest of the config.
+Add the support button to the VitePress layout and import the CSS:
+
+```js
+import { defineAsyncComponent, h } from 'vue'
+import DefaultTheme from 'vitepress/theme'
+import SupportButton from './components/SupportButton.vue'
+import './style.css'
+
+export default {
+  extends: DefaultTheme,
+  Layout() {
+    return h(DefaultTheme.Layout, null, {
+      'layout-bottom': () => h(SupportButton),
+    })
+  },
+  enhanceApp({ app }) {
+    app.component('InstallButton', defineAsyncComponent(() => import('./components/InstallButton.vue')))
+  },
+}
+```
+
+Add this CSS:
+
+```css
+.sp-support-btn{position:fixed;right:28px;bottom:28px;z-index:150;display:inline-block;line-height:0}
+.sp-support-btn img{height:60px;display:block;border-radius:999px}
+```
 
 ## Webserver floating button
 
