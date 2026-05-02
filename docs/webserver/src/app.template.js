@@ -50,6 +50,8 @@
     schedule_wake_timeout: 60,
     screen_warmth_day: 30,
     screen_warmth_night: 60,
+    clock_time_format: "24 Hour",
+    clock_time_format_options: ["24 Hour", "12 Hour"],
     clock_timezone: "UTC (GMT+0)",
     clock_timezone_options: ["UTC (GMT+0)"],
     screen_rotation: "0",
@@ -96,6 +98,7 @@
     schedule_wake_timeout: { domain: "number", name: "Screen: Schedule Wake Timeout", number: true },
     screen_warmth_day: { domain: "number", name: "Day: Screen Warmth", number: true },
     screen_warmth_night: { domain: "number", name: "Night: Screen Warmth", number: true },
+    clock_time_format: { domain: "select", name: "Clock: Time Format", optionsKey: "clock_time_format_options" },
     clock_timezone: { domain: "select", name: "Screen: Timezone", optionsKey: "clock_timezone_options" },
     screen_rotation: { domain: "select", name: "Screen Rotation", optionsKey: "screen_rotation_options" },
     auto_update: { domain: "switch", name: "Firmware: Auto Update", bool: true },
@@ -645,6 +648,7 @@
 
   function clockCard() {
     var body = el("div");
+    body.appendChild(segmentedSelectField("Clock Format", "clock_time_format"));
     body.appendChild(selectField("Timezone", "clock_timezone"));
     return card("Clock", body, true);
   }
@@ -946,6 +950,35 @@
       if (onChange) onChange(select.value);
     };
     f.appendChild(select);
+    return f;
+  }
+
+  function segmentedSelectField(label, key, onChange) {
+    var f = field(label);
+    var options = (S[key + "_options"] || []).slice();
+    if (options.indexOf(S[key]) === -1 && S[key]) options.unshift(S[key]);
+    if (!options.length) options.push(S[key] || "");
+    var group = el("div", "segmented");
+    group.setAttribute("role", "tablist");
+    options.forEach(function (option) {
+      var button = el("button", "segmented-option" + (option === S[key] ? " active" : ""));
+      button.type = "button";
+      button.setAttribute("role", "tab");
+      button.setAttribute("aria-selected", option === S[key] ? "true" : "false");
+      button.textContent = option;
+      button.onclick = function () {
+        S[key] = option;
+        Array.prototype.forEach.call(group.children, function (child) {
+          var active = child.textContent === option;
+          child.className = "segmented-option" + (active ? " active" : "");
+          child.setAttribute("aria-selected", active ? "true" : "false");
+        });
+        post(endpoint(key) + "/set", { option: option });
+        if (onChange) onChange(option);
+      };
+      group.appendChild(button);
+    });
+    f.appendChild(group);
     return f;
   }
 

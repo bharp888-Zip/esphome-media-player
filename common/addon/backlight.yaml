@@ -766,8 +766,13 @@ script:
           auto time = id(ha_time).now();
           int minute = 0;
           if (time.is_valid()) {
-            char buf[6];
-            snprintf(buf, sizeof(buf), "%02d:%02d", time.hour, time.minute);
+            int hour = time.hour;
+            if (id(clock_time_format).current_option() == "12 Hour") {
+              hour = hour % 12;
+              if (hour == 0) hour = 12;
+            }
+            char buf[7];
+            snprintf(buf, sizeof(buf), "%d:%02d", hour, time.minute);
             lv_label_set_text(id(clock_label), buf);
             minute = time.minute;
           }

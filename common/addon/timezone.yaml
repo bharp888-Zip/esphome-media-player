@@ -17,6 +17,21 @@ globals:
 
 select:
   - platform: template
+    name: "Clock: Time Format"
+    id: clock_time_format
+    icon: "mdi:clock-digital"
+    entity_category: config
+    internal: ${ha_config_internal}
+    optimistic: true
+    restore_value: true
+    initial_option: "24 Hour"
+    options:
+      - "24 Hour"
+      - "12 Hour"
+    on_value:
+      - script.execute: refresh_clock_label
+
+  - platform: template
     name: "Screen: Timezone"
     id: clock_timezone
     icon: "mdi:map-clock"
