@@ -73,6 +73,18 @@ const allDevices = [
     manifest: 'jc8012p4a1/manifest.json',
   },
   {
+    key: 'jc1060p470',
+    label: 'JC1060P470',
+    size: '7 in',
+    resolution: '1024 x 600',
+    slots: 15,
+    cols: 5,
+    rows: 3,
+    aspect: '1024 / 600',
+    shape: 'landscape',
+    manifest: 'jc1060p470/manifest.json',
+  },
+  {
     key: 'p4-86-panel',
     label: 'P4 86 Panel',
     size: '4 in',

@@ -110,6 +110,7 @@ jobs:
           }
 
           add_p4_build "jc8012p4a1"
+          add_p4_build "jc1060p470"
           add_p4_build "jc4880p443"
           add_p4_build "p4-86-panel"
       - name: Rename S3 paths in combined manifest
@@ -156,6 +157,16 @@ jobs:
           cp "${FW}/media-player-jc8012p4a1.factory.bin" "${FW}/jc8012p4a1/" 2>/dev/null || true
           cp "${FW}/media-player-jc8012p4a1.ota.bin" "${FW}/jc8012p4a1/" 2>/dev/null || true
           echo "Created firmware/jc8012p4a1/manifest.json"
+
+          # P4 device manifest (JC1060P470) — extract the matching ESP32-P4 build entry
+          jq '{name: .name, version: .version, home_assistant_domain: .home_assistant_domain, new_install_prompt_erase: .new_install_prompt_erase, builds: [.builds[] | select(any(.parts[]; .path == "media-player-jc1060p470.factory.bin"))]}' \
+            "$MANIFEST" > "${FW}/media-player-jc1060p470.manifest.json"
+          echo "Created media-player-jc1060p470.manifest.json"
+          mkdir -p "${FW}/jc1060p470"
+          cp "${FW}/media-player-jc1060p470.manifest.json" "${FW}/jc1060p470/manifest.json"
+          cp "${FW}/media-player-jc1060p470.factory.bin" "${FW}/jc1060p470/" 2>/dev/null || true
+          cp "${FW}/media-player-jc1060p470.ota.bin" "${FW}/jc1060p470/" 2>/dev/null || true
+          echo "Created firmware/jc1060p470/manifest.json"
 
           # P4 device manifest (JC4880P443) — extract the matching ESP32-P4 build entry
           jq '{name: .name, version: .version, home_assistant_domain: .home_assistant_domain, new_install_prompt_erase: .new_install_prompt_erase, builds: [.builds[] | select(any(.parts[]; .path == "media-player-jc4880p443.factory.bin"))]}' \

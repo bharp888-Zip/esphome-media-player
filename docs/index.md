@@ -19,6 +19,8 @@ A touchscreen media controller for Home Assistant: album art, track info, and to
 
 [ESP32-P4 86 Panel (4")](/devices/esp32-p4-86-panel)
 
+[Guition ESP32-P4 JC1060P470 (7")](/devices/esp32-p4-jc1060p470)
+
 [Guition ESP32-P4 JC4880P443 (4.3")](/devices/esp32-p4-jc4880p443)
 
 ## Learn more
