@@ -232,26 +232,26 @@ lvgl:
               - arc:
                   id: volume_arc
                   align: center
-                  y: 20
-                  width: 380
-                  height: 380
+                  y: 10
+                  width: 520
+                  height: 520
                   min_value: 0
                   max_value: 100
                   value: 30
                   adjustable: true
                   arc_color: 0x333333
-                  arc_width: 20
+                  arc_width: 26
                   arc_rounded: true
                   hidden: true
                   indicator:
                     arc_color: 0x999999
-                    arc_width: 20
+                    arc_width: 26
                     arc_rounded: true
                   knob:
                     bg_color: 0xFFFFFF
-                    radius: 14
-                    width: 28
-                    height: 28
+                    radius: 19
+                    width: 38
+                    height: 38
                     border_width: 0
                   on_value:
                     - lvgl.label.update:
@@ -281,8 +281,8 @@ lvgl:
                   text_font: roboto19_font
                   text_color: 0x888888
                   align: center
-                  y: -30
-                  width: 140
+                  y: -75
+                  width: 180
                   height: 24
                   text_align: center
                   hidden: true
@@ -292,18 +292,18 @@ lvgl:
                   text_font: roboto56_font
                   text_color: 0xFFFFFF
                   align: center
-                  y: 20
-                  width: 200
-                  height: 60
+                  y: 10
+                  width: 280
+                  height: 96
                   text_align: center
                   hidden: true
               - button:
                   id: volume_down_button
                   align: center
-                  x: -48
-                  y: 165
-                  width: 72px
-                  height: 72px
+                  x: -66
+                  y: 220
+                  width: 96px
+                  height: 96px
                   styles: control_round
                   hidden: true
                   widgets:
@@ -323,10 +323,10 @@ lvgl:
               - button:
                   id: volume_up_button
                   align: center
-                  x: 48
-                  y: 165
-                  width: 72px
-                  height: 72px
+                  x: 66
+                  y: 220
+                  width: 96px
+                  height: 96px
                   styles: control_round
                   hidden: true
                   widgets:
