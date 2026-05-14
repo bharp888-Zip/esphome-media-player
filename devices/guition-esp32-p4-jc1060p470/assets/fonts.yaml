@@ -7,7 +7,7 @@
 font:
   - file: "gfonts://Roboto@Thin"
     id: roboto_thin160_font
-    size: 160
+    size: 240
     bpp: 4
     glyphs: " 0123456789:"
 
