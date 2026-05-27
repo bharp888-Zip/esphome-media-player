@@ -17,6 +17,11 @@ lvgl:
         lv_obj_set_style_pad_right(id(speakers_container), 0, LV_PART_SCROLLBAR);
         lv_obj_set_style_pad_top(id(speakers_container), 0, LV_PART_SCROLLBAR);
         lv_obj_set_style_pad_bottom(id(speakers_container), 0, LV_PART_SCROLLBAR);
+        lv_obj_set_height(id(media_progress_bar), 4);
+        lv_obj_set_style_min_height(id(media_progress_bar), 4, LV_PART_MAIN);
+        lv_obj_set_style_min_height(id(media_progress_bar), 4, LV_PART_INDICATOR);
+        lv_obj_set_style_pad_all(id(media_progress_bar), 0, LV_PART_MAIN);
+        lv_obj_set_style_pad_all(id(media_progress_bar), 0, LV_PART_INDICATOR);
         lv_indev_t *indev = lv_indev_get_next(NULL);
         #if ESPHOME_VERSION_CODE >= VERSION_CODE(2026, 4, 0)
         if (indev) lv_indev_set_scroll_limit(indev, 20);
