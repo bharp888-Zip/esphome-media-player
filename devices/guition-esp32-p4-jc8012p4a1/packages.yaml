@@ -21,6 +21,7 @@ substitutions:
   artwork_saturation_boost: "0.0f"
   track_info_duration_default: "0"
   pause_lvgl_on_screen_off: "false"
+  backlight_dim_transition_length: "0s"
   clock_screensaver_supported: "true"
   idle_action_default: "Clock"
   screen_schedule_internal: "true"

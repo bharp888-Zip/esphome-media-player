@@ -165,7 +165,7 @@ logger:
 # Without this, the display won't have enough memory for the framebuffer.
 # -----------------------------------------------------------------------------
 psram:
-  speed: 200MHz
+  speed: 100MHz
 
 
 # MIPI DSI PHY power rail.

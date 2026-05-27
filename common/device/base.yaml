@@ -14,6 +14,17 @@ substitutions:
   screen_schedule_internal: "true"
   ha_config_internal: "false"
 
+preferences:
+  # The dashboard UI keeps display buffers in external RAM while ESPHome also
+  # restores many settings. Avoid the default 1-minute flash flush while the UI
+  # is running; explicit sync calls still save critical setup changes.
+  flash_write_interval: never
+
+safe_mode:
+  # Safe mode marks a boot successful after 60s, which also writes to flash.
+  # On display-heavy builds this can collide with active LVGL/PSRAM traffic.
+  disabled: true
+
 globals:
   - id: web_settings_active
     type: bool

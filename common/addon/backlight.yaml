@@ -18,6 +18,9 @@
 # -----------------------------------------------------------------------------
 # CUSTOM DAY/NIGHT SENSOR STATE
 # -----------------------------------------------------------------------------
+substitutions:
+  backlight_dim_transition_length: "3s"
+
 globals:
   - id: custom_day_night_is_day
     type: bool
@@ -641,7 +644,7 @@ script:
                   }
                   if (!(pct > 0.0f)) return 0.0f;
                   return ${backlight_min_visible_level} + (pct / 100.0f) * (1.0f - ${backlight_min_visible_level});
-                transition_length: 3s
+                transition_length: ${backlight_dim_transition_length}
             - delay: !lambda |-
                 float dim_s = id(backlight_dim_timeout).state;
                 float saver_s = id(backlight_off_timeout).state;

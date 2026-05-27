@@ -201,7 +201,7 @@ logger:
 # -----------------------------------------------------------------------------
 psram:
   mode: hex
-  speed: 200MHz
+  speed: 100MHz
 
 
 # MIPI DSI PHY power rail.
