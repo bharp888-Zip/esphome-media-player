@@ -3,6 +3,12 @@ name: Build Release
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Full version for a test build, for example v2.0.3-test.1
+        required: true
+        default: v0.0.0-test.1
 
 permissions:
   contents: write
@@ -15,7 +21,7 @@ jobs:
   release-notes:
     name: Update Release Notes
     if: github.event_name == 'release'
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v6
         with:
@@ -36,7 +42,7 @@ jobs:
 
   build-firmware:
     name: Build ${{ matrix.asset_slug }}
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
@@ -72,11 +78,19 @@ jobs:
         run: |
           curl -sSL -o builds/network_adapter_esp32c6.bin \
             "https://esphome.github.io/esp-hosted-firmware/v2.11.5/network_adapter_esp32c6.bin"
-          echo "3ccfbc4feb0be29c7f5dbe50b0c5a7f0862f0b0c30fb28e5f5a4e1c2891c53f4  builds/network_adapter_esp32c6.bin" | sha256sum --check
+          python3 - <<'PY'
+          import hashlib
+          from pathlib import Path
+
+          expected = "3ccfbc4feb0be29c7f5dbe50b0c5a7f0862f0b0c30fb28e5f5a4e1c2891c53f4"
+          actual = hashlib.sha256(Path("builds/network_adapter_esp32c6.bin").read_bytes()).hexdigest()
+          if actual != expected:
+              raise SystemExit(f"Checksum mismatch: expected {expected}, got {actual}")
+          PY
 
       - name: Compile firmware
         env:
-          VERSION: ${{ github.event.release.tag_name }}
+          VERSION: ${{ github.event.release.tag_name || inputs.version }}
         run: |
           python3 scripts/firmware_release.py inject \
             --slug "${{ matrix.asset_slug }}" \
@@ -97,7 +111,7 @@ jobs:
 
       - name: Collect firmware files and generate manifest
         env:
-          VERSION: ${{ github.event.release.tag_name }}
+          VERSION: ${{ github.event.release.tag_name || inputs.version }}
           RELEASE_SUMMARY: ${{ github.event.release.body || '' }}
         run: |
           BUILD_DIR=$(dirname "$(find builds/.esphome/build -path '*/.pioenvs/*/firmware.factory.bin' -print -quit)")
@@ -147,7 +161,7 @@ jobs:
     name: Publish to Release
     if: github.event_name == 'release'
     needs: [release-notes, build-firmware]
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v6
         with:
