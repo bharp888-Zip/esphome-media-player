@@ -95,20 +95,16 @@ script:
                    id(is_tv_mode) ? "tv" : "music", iw, ih);
           auto *w = id(album_art_background_widget);
           constexpr int display_size = ${artwork_display_size};
+          lv_obj_set_size(w, display_size, display_size);
+          lv_obj_set_pos(w, 0, 0);
+          lv_img_set_offset_x(w, 0);
+          lv_img_set_offset_y(w, 0);
           int dim = (iw < ih) ? iw : ih;
           if (!id(is_tv_mode) && ${artwork_allow_zoom} && dim > 0 && dim < display_size) {
             int zoom = (256 * display_size + dim - 1) / dim;
             lv_img_set_zoom(w, zoom);
-            lv_img_set_offset_x(w, 0);
-            lv_img_set_offset_y(w, 0);
-            lv_obj_set_size(w, iw, ih);
-            lv_obj_set_pos(w, (display_size - iw) / 2, (display_size - ih) / 2);
           } else {
             lv_img_set_zoom(w, 256);
-            lv_img_set_offset_x(w, 0);
-            lv_img_set_offset_y(w, 0);
-            lv_obj_set_size(w, iw, ih);
-            lv_obj_set_pos(w, (display_size - iw) / 2, (display_size - ih) / 2);
           }
           lv_obj_align(id(media_progress_bar), LV_ALIGN_BOTTOM_MID, 0, 0);
       - if:
