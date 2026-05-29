@@ -150,12 +150,7 @@ size_t ArtworkImage::resize_(int width_in, int height_in) {
     width = width_in;
     height = height_in;
   } else if (width_in > 0 && height_in > 0) {
-    if (width_in == height_in) {
-      if (width_in < this->fixed_width_) {
-        width = width_in;
-        height = height_in;
-      }
-    } else {
+    if (width_in != height_in) {
       double scale = std::min(
         static_cast<double>(this->fixed_width_) / width_in,
         static_cast<double>(this->fixed_height_) / height_in
