@@ -648,6 +648,7 @@ script:
                       id: tv_art_background
                       url: !lambda 'return id(last_tv_artwork_url);'
       - script.execute: show_track_view
+      - script.execute: refresh_progress_bar_from_state
       - logger.log: "Entered linked media player mode"
 
   - id: exit_tv_mode
@@ -724,6 +725,7 @@ script:
                 id: album_art_background
                 url: !lambda 'return id(last_artwork_url);'
       - script.execute: show_track_view
+      - script.execute: refresh_progress_bar_from_state
       - logger.log: "Exited linked media player mode"
 
 
