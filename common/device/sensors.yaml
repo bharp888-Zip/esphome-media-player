@@ -46,7 +46,8 @@ globals:
     initial_value: '""'
 
 # Refresh elapsed time from the last Home Assistant position anchor. The progress
-# bar itself is re-anchored on state/position changes, then LVGL animates it.
+# bar is re-anchored on state/position changes, then LVGL animates it on a
+# high-resolution range so long tracks still look smooth.
 interval:
   - interval: ${playback_refresh_interval}
     then:
@@ -189,27 +190,29 @@ script:
             if (t.is_valid()) id(last_position_timestamp) = t.timestamp;
           }
 
-          int percent = 0;
+          const int progress_range = ${playback_progress_bar_range};
+          int value = 0;
           if (dur > 0.0f) {
-            percent = (int)((pos / dur) * 100.0f);
+            value = (int)((pos / dur) * (float)progress_range + 0.5f);
           }
-          if (percent < 0) percent = 0;
-          if (percent > 100) percent = 100;
+          if (value < 0) value = 0;
+          if (value > progress_range) value = progress_range;
 
           if (lv_obj_has_flag(id(media_progress_bar), LV_OBJ_FLAG_HIDDEN)) {
             lv_obj_clear_flag(id(media_progress_bar), LV_OBJ_FLAG_HIDDEN);
           }
 
           if (tv_mode) {
-            id(last_tv_progress_percent) = percent;
+            id(last_tv_progress_percent) = value;
           } else {
-            id(last_media_progress_percent) = percent;
+            id(last_media_progress_percent) = value;
           }
 
+          lv_bar_set_range(id(media_progress_bar), 0, progress_range);
           lv_obj_set_style_anim_duration(id(media_progress_bar), 0, LV_PART_MAIN);
-          lv_bar_set_value(id(media_progress_bar), percent, LV_ANIM_OFF);
+          lv_bar_set_value(id(media_progress_bar), value, LV_ANIM_OFF);
 
-          if (!${playback_live_position_enabled} || !playing || dur <= 0.0f || pos >= dur || percent >= 100) {
+          if (!${playback_live_position_enabled} || !playing || dur <= 0.0f || pos >= dur || value >= progress_range) {
             return;
           }
 
@@ -219,7 +222,7 @@ script:
           if (remaining_ms > 86400000) remaining_ms = 86400000;
 
           lv_obj_set_style_anim_duration(id(media_progress_bar), remaining_ms, LV_PART_MAIN);
-          lv_bar_set_value(id(media_progress_bar), 100, LV_ANIM_ON);
+          lv_bar_set_value(id(media_progress_bar), progress_range, LV_ANIM_ON);
 
   # Start the hide timer only (no show). Used when artwork finishes loading or when
   # playback starts. After duration seconds, hides overlay if still playing and visible.
@@ -480,6 +483,13 @@ text_sensor:
                 id(ha_position_epoch) = epoch;
                 if (id(media_position_sensor).has_state()) {
                   id(last_position_timestamp) = epoch;
+                  float anchor = id(media_position_sensor).state;
+                  auto t = id(ha_time).now();
+                  if (t.is_valid()) {
+                    anchor += (float)(t.timestamp - epoch);
+                  }
+                  if (anchor < 0.0f) anchor = 0.0f;
+                  id(last_media_position) = anchor;
                 }
             - script.execute: refresh_progress_bar_from_state
 
@@ -517,12 +527,16 @@ sensor:
           then:
             - lambda: |-
                 id(last_media_position) = x;
+                auto t = id(ha_time).now();
                 if (id(ha_position_epoch) != 0) {
                   id(last_position_timestamp) = id(ha_position_epoch);
+                  if (t.is_valid()) {
+                    id(last_media_position) = x + (float)(t.timestamp - id(ha_position_epoch));
+                  }
                 } else {
-                  auto t = id(ha_time).now();
                   if (t.is_valid()) id(last_position_timestamp) = t.timestamp;
                 }
+                if (id(last_media_position) < 0.0f) id(last_media_position) = 0.0f;
             - script.execute: refresh_progress_bar_from_state
 
   - platform: template

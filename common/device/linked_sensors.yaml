@@ -342,6 +342,13 @@ text_sensor:
                 id(tv_ha_position_epoch) = epoch;
                 if (id(tv_media_position_sensor).has_state()) {
                   id(last_tv_position_timestamp) = epoch;
+                  float anchor = id(tv_media_position_sensor).state;
+                  auto t = id(ha_time).now();
+                  if (t.is_valid()) {
+                    anchor += (float)(t.timestamp - epoch);
+                  }
+                  if (anchor < 0.0f) anchor = 0.0f;
+                  id(last_tv_media_position) = anchor;
                 }
             - script.execute: refresh_progress_bar_from_state
 
@@ -364,10 +371,14 @@ sensor:
           then:
             - lambda: |-
                 id(last_tv_media_position) = x;
+                auto t = id(ha_time).now();
                 if (id(tv_ha_position_epoch) != 0) {
                   id(last_tv_position_timestamp) = id(tv_ha_position_epoch);
+                  if (t.is_valid()) {
+                    id(last_tv_media_position) = x + (float)(t.timestamp - id(tv_ha_position_epoch));
+                  }
                 } else {
-                  auto t = id(ha_time).now();
                   if (t.is_valid()) id(last_tv_position_timestamp) = t.timestamp;
                 }
+                if (id(last_tv_media_position) < 0.0f) id(last_tv_media_position) = 0.0f;
             - script.execute: refresh_progress_bar_from_state
