@@ -27,6 +27,8 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
+          sparse-checkout: scripts/release_changelog.py
+          sparse-checkout-cone-mode: false
 
       - name: Build detailed changelog
         env:
