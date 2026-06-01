@@ -138,6 +138,7 @@ script:
           ESP_LOGD("warm", "Warmth apply start: image=%dx%d pixels=%d retint=%s",
                    img->get_width(), img->get_height(), total, retint ? "yes" : "no");
           for (int i = 0; i < total; i++) {
+            if ((i & 0x0FFF) == 0) App.feed_wdt();
             int pos = i * 2;
             uint16_t px = buf[pos] | (buf[pos + 1] << 8);
             int r = ((int)r_lut[(px >> 11) & 0x1F] << 3);
@@ -161,6 +162,7 @@ script:
             buf[pos]     = out & 0xFF;
             buf[pos + 1] = (out >> 8) & 0xFF;
           }
+          App.feed_wdt();
 
           lv_obj_invalidate(id(album_art_background_widget));
           id(warm_tone_last_w) = w;

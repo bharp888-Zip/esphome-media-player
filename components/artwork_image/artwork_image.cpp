@@ -4,6 +4,7 @@
 #include <cctype>
 #include <cstdlib>
 #include <cstring>
+#include "esphome/core/application.h"
 #include "esphome/core/log.h"
 #include "esphome/core/version.h"
 
@@ -20,6 +21,7 @@ static const char *const CONTENT_TYPE_HEADER_NAME = "content-type";
 static constexpr uint32_t RETIRED_BUFFER_GRACE_MS = 1000;
 static constexpr size_t MAX_RETIRED_BUFFERS = 2;
 static constexpr size_t MAX_DOWNLOAD_BUFFER_SIZE = 2 * 1024 * 1024;
+static constexpr int LOCAL_ARTWORK_HTTP_TIMEOUT_MS = 2500;
 
 #include "image_decoder.h"
 
@@ -360,7 +362,7 @@ std::shared_ptr<http_request::HttpContainer> ArtworkImage::get_local_idf_(
   esp_http_client_config_t config = {};
   config.url = url.c_str();
   config.method = HTTP_METHOD_GET;
-  config.timeout_ms = this->parent_->get_timeout();
+  config.timeout_ms = std::min<int>(this->parent_->get_timeout(), LOCAL_ARTWORK_HTTP_TIMEOUT_MS);
   config.disable_auto_redirect = false;
   config.max_redirection_count = 3;
   config.auth_type = HTTP_AUTH_TYPE_BASIC;
@@ -382,7 +384,9 @@ std::shared_ptr<http_request::HttpContainer> ArtworkImage::get_local_idf_(
   }
 
   const uint32_t start = millis();
+  App.feed_wdt();
   esp_err_t err = esp_http_client_open(client, 0);
+  App.feed_wdt();
   if (err != ESP_OK) {
     ESP_LOGE(TAG, "Local artwork request failed: %s", esp_err_to_name(err));
     container->end();
@@ -390,6 +394,7 @@ std::shared_ptr<http_request::HttpContainer> ArtworkImage::get_local_idf_(
   }
 
   int content_length = esp_http_client_fetch_headers(client);
+  App.feed_wdt();
   container->content_length = content_length > 0 ? static_cast<size_t>(content_length) : 0;
   container->set_chunked(esp_http_client_is_chunked_response(client));
   container->status_code = esp_http_client_get_status_code(client);
@@ -896,6 +901,7 @@ void ArtworkImage::finish_download_() {
   ESP_LOGD(TAG, "Image fully downloaded, read %zu bytes, width/height = %d/%d",
            this->downloader_ ? this->downloader_->get_bytes_read() : 0, this->width_, this->height_);
   ESP_LOGD(TAG, "Total time: %" PRIu32 "s", (uint32_t) (::time(nullptr) - this->start_time_));
+  App.feed_wdt();
 #ifdef USE_LVGL
 #if ESPHOME_VERSION_CODE >= VERSION_CODE(2026, 4, 0)
   this->get_lv_image_dsc();
@@ -904,9 +910,11 @@ void ArtworkImage::finish_download_() {
 #endif
 #endif
   this->log_state_("lvgl-descriptor-ready");
-  this->download_finished_callback_.call(false);
-  this->log_state_("download-callback-finished");
+  App.feed_wdt();
   this->end_connection_();
+  this->download_finished_callback_.call(false);
+  App.feed_wdt();
+  this->log_state_("download-callback-finished");
   this->start_pending_update_();
 }
 
