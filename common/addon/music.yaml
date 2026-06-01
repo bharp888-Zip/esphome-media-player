@@ -118,6 +118,7 @@ script:
             - lvgl.image.update:
                 id: album_art_background_widget
                 src: album_art_background
+      - lvgl.widget.show: album_art_background_widget
       - lvgl.widget.update:
           id: album_art_background_widget
           opa: 100%

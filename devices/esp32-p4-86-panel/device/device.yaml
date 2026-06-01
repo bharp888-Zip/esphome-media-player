@@ -644,8 +644,11 @@ script:
                   - lvgl.widget.update:
                       id: album_art_background_widget
                       opa: 50%
+                  - lvgl.widget.hide: album_art_background_widget
+                  - delay: 50ms
                   - artwork_image.release: tv_art_background
                   - delay: 100ms
+                  - lvgl.widget.show: album_art_background_widget
                   - artwork_image.set_url:
                       id: tv_art_background
                       url: !lambda 'return id(last_tv_artwork_url);'
@@ -720,8 +723,11 @@ script:
             - lvgl.widget.update:
                 id: album_art_background_widget
                 opa: 50%
+            - lvgl.widget.hide: album_art_background_widget
+            - delay: 50ms
             - artwork_image.release: album_art_background
             - delay: 100ms
+            - lvgl.widget.show: album_art_background_widget
             - artwork_image.set_url:
                 id: album_art_background
                 url: !lambda 'return id(last_artwork_url);'

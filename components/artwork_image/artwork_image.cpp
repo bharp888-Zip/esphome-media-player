@@ -125,9 +125,8 @@ void ArtworkImage::draw(int x, int y, display::Display *display, Color color_on,
 void ArtworkImage::release() {
   this->update_pending_ = false;
   this->pending_url_.clear();
-  this->discard_decode_buffer_();
-  this->retire_active_buffer_();
   this->end_connection_();
+  this->retire_active_buffer_();
   this->cleanup_retired_buffers_(false);
   if (!this->retired_buffers_.empty()) {
     this->enable_loop();
