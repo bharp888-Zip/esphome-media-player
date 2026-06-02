@@ -8,7 +8,7 @@ substitutions:
   allow_insecure_local_artwork: "false"
   image_byte_order: "little_endian"
   artwork_image_buffer_size: "65536"
-  artwork_download_spread_ms: "2000"
+  artwork_download_spread_ms: "12000"
   artwork_http_timeout: "6500ms"
   artwork_allow_zoom: "true"
   release_artwork_before_download: "false"
@@ -17,7 +17,7 @@ substitutions:
   playback_live_time_enabled: "true"
   playback_live_position_enabled: "true"
   rgb565_read_expr: "data[pos] | (data[pos + 1] << 8)"
-  backlight_min_visible_level: "0.0f"
+  backlight_min_visible_level: "0.02f"
   screen_schedule_internal: "true"
   ha_config_internal: "false"
 
