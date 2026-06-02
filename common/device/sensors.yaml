@@ -246,9 +246,6 @@ script:
     mode: restart
     then:
       - script.stop: delayed_idle_cleanup
-      - script.execute: ensure_artwork_download_stagger
-      - script.wait: ensure_artwork_download_stagger
-      - delay: !lambda 'return static_cast<uint32_t>(300 + id(artwork_download_stagger_ms));'
       - if:
           condition:
             lambda: 'return !id(web_settings_active);'

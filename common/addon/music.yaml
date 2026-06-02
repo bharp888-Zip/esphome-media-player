@@ -167,13 +167,13 @@ script:
             - script.wait: ensure_artwork_download_stagger
             - delay: !lambda |-
                 const int attempt = id(artwork_retry_attempts);
-                uint32_t backoff_ms = 1000;
-                if (attempt == 2) backoff_ms = 3000;
-                else if (attempt == 3) backoff_ms = 8000;
-                else if (attempt == 4) backoff_ms = 15000;
-                else if (attempt >= 5) backoff_ms = 30000;
+                uint32_t backoff_ms = 500;
+                if (attempt == 2) backoff_ms = 1500;
+                else if (attempt == 3) backoff_ms = 3000;
+                else if (attempt == 4) backoff_ms = 6000;
+                else if (attempt >= 5) backoff_ms = 10000;
                 uint32_t device_spread_ms = static_cast<uint32_t>(id(artwork_retry_stagger_ms));
-                return static_cast<uint32_t>(backoff_ms + (device_spread_ms * attempt));
+                return static_cast<uint32_t>(backoff_ms + device_spread_ms);
             - lambda: |-
                 auto *img = id(is_tv_mode) ? id(tv_art_background) : id(album_art_background);
                 const std::string &url = id(is_tv_mode) ? id(last_tv_artwork_url) : id(last_artwork_url);
