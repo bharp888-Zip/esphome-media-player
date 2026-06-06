@@ -440,9 +440,9 @@ script:
           } else {
             lv_obj_set_pos(id(accent_overlay), 0, 800);
             lv_obj_set_size(id(accent_overlay), 800, 480);
-            lv_obj_set_pos(id(track_info_panel), 64, 844);
-            lv_obj_set_size(id(track_info_panel), 672, 360);
-            lv_obj_set_style_max_height(id(media_title_label), 210, 0);
+            lv_obj_set_pos(id(track_info_panel), 40, 834);
+            lv_obj_set_size(id(track_info_panel), 720, 422);
+            lv_obj_set_style_max_height(id(media_title_label), 216, 0);
           }
 
           lv_obj_set_width(id(media_progress_bar), screen_w);
