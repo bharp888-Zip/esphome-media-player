@@ -58,8 +58,17 @@ def check_devices() -> None:
     assert_unique((device.web_slug for device in devices), "web slugs")
     assert_unique((device.config for device in devices), "device configs")
     assert_unique((str(device.docs["order"]) for device in devices), "docs order values")
+    package_paths = [device.package_path for device in devices]
     build_config_names = [device.config for device in devices]
     for device in devices:
+        alternate_package_paths = device.alternate_package_paths or []
+        if not isinstance(alternate_package_paths, list):
+            fail(f"{device.asset_slug} alternate_package_paths must be a list in product/devices.json")
+        for alternate_package_path in alternate_package_paths:
+            if not isinstance(alternate_package_path, str) or not alternate_package_path.strip():
+                fail(f"{device.asset_slug} alternate_package_paths entries must be non-empty strings")
+            package_paths.append(alternate_package_path)
+
         aliases = device.build_aliases or []
         if not isinstance(aliases, list):
             fail(f"{device.asset_slug} build_aliases must be a list in product/devices.json")
@@ -69,6 +78,7 @@ def check_devices() -> None:
             if alias.endswith(".yaml") or "/" in alias:
                 fail(f"{device.asset_slug} build alias {alias!r} must be a plain build config name")
             build_config_names.append(alias)
+    assert_unique(package_paths, "package paths")
     assert_unique(build_config_names, "build config names")
 
     for device in devices:
@@ -82,6 +92,10 @@ def check_devices() -> None:
         package_path = ROOT / device.package_path
         if not package_path.is_file():
             fail(f"{device.asset_slug} package path is missing: {device.package_path}")
+        for alternate_package_path in device.alternate_package_paths or []:
+            package_path = ROOT / alternate_package_path
+            if not package_path.is_file():
+                fail(f"{device.asset_slug} alternate package path is missing: {alternate_package_path}")
 
         esphome_config = device.esphome
         for key in ("title", "name", "friendly_name"):
