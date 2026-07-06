@@ -83,6 +83,21 @@ def check_devices() -> None:
         if not package_path.is_file():
             fail(f"{device.asset_slug} package path is missing: {device.package_path}")
 
+        esphome_config = device.esphome
+        for key in ("title", "name", "friendly_name"):
+            if not isinstance(esphome_config.get(key), str) or not esphome_config[key].strip():
+                fail(f"{device.asset_slug} is missing esphome.{key} in product/devices.json")
+        rotation_comments = esphome_config.get("rotation_comments", [])
+        if not isinstance(rotation_comments, list):
+            fail(f"{device.asset_slug} esphome.rotation_comments must be a list in product/devices.json")
+        for index, comment in enumerate(rotation_comments, start=1):
+            if not isinstance(comment, str) or not comment.strip():
+                fail(f"{device.asset_slug} esphome.rotation_comments[{index}] must be a non-empty string")
+        if "rotation_example" in esphome_config and (
+            not isinstance(esphome_config["rotation_example"], str) or not esphome_config["rotation_example"].strip()
+        ):
+            fail(f"{device.asset_slug} esphome.rotation_example must be a non-empty string")
+
         base_package = ROOT / "devices" / device.config / "packages.yaml"
         package_text = read(base_package)
         if f'device_slug: "{device.profile}"' not in package_text:

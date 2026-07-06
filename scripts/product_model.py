@@ -28,6 +28,7 @@ class Device:
     config: str
     chip: str
     package_path: str
+    esphome: dict[str, Any]
     docs_path: str
     docs: dict[str, Any]
     purchase: dict[str, Any]
