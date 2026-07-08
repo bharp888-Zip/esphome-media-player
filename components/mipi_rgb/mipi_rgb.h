@@ -93,6 +93,10 @@ class MipiRgb : public display::Display {
   uint16_t y_low_{1};
   uint16_t x_high_{0};
   uint16_t y_high_{0};
+  // Pixels written since the last scan-phase resync decision; used to detect
+  // large (artwork-sized) redraws that can shift the RGB scan-out phase.
+  size_t refresh_pixels_{0};
+  uint32_t last_restart_ms_{0};
 
   esp_lcd_panel_handle_t handle_{};
 };

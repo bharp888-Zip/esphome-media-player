@@ -90,6 +90,13 @@ class ImageDecoder {
   bool is_finished() const { return this->download_size_ > 0 && this->decoded_bytes_ >= this->download_size_; }
   bool has_unknown_download_size() const { return this->download_size_ == 0; }
   void set_download_size(size_t download_size) { this->download_size_ = download_size; }
+  /**
+   * @brief Whether the decoder has started producing output and needs more
+   * decode() calls to finish, independent of further download data.
+   * Incremental decoders (JPEG) return true while scanline output is being
+   * spread across loop() passes.
+   */
+  virtual bool is_decoding() const { return false; }
 
  protected:
   ArtworkImage *image_;
@@ -127,6 +134,13 @@ class DownloadBuffer {
   void reset() { this->unread_ = 0; }
 
   size_t resize(size_t size);
+
+  /**
+   * Shrink the buffer back down to the given capacity, keeping any unread
+   * bytes. No-op if the buffer is already at or below the target size, if the
+   * unread data would not fit, or if the reallocation fails.
+   */
+  size_t shrink_to(size_t size);
 
  protected:
   RAMAllocator<uint8_t> allocator_{};

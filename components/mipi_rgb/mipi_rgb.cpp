@@ -132,8 +132,6 @@ void MipiRgb::setup() {
 void MipiRgb::common_setup_() {
   esp_lcd_rgb_panel_config_t config{};
   config.flags.fb_in_psram = 1;
-  // Album-art redraws are full-screen and PSRAM-heavy. A larger internal bounce
-  // buffer gives the RGB DMA more headroom while JPEG decode/LVGL compete for PSRAM.
   config.bounce_buffer_size_px = this->width_ * RGB_BOUNCE_BUFFER_ROWS;
   config.num_fbs = 1;
   config.timings.h_res = this->width_;
@@ -248,8 +246,30 @@ void MipiRgb::write_to_display_(int x_start, int y_start, int w, int h, const ui
       ptr += stride;  // next line
     }
   }
-  if (err != ESP_OK)
+  if (err != ESP_OK) {
     ESP_LOGE(TAG, "lcd_lcd_panel_draw_bitmap failed: %s", esp_err_to_name(err));
+    return;
+  }
+  // Heavy PSRAM traffic during large blits (album-art redraws) can underflow
+  // the bounce buffer and leave the scan-out phase shifted, which shows as
+  // persistent horizontal banding. After a redraw cycle that rewrote at least
+  // half the panel finishes at the bottom edge, request a one-shot restart to
+  // re-sync the phase (executed at VSYNC via CONFIG_LCD_RGB_RESTART_IN_VSYNC).
+  // Rate-limited so full-screen fade animations don't restart every frame.
+  this->refresh_pixels_ += static_cast<size_t>(w) * static_cast<size_t>(h);
+  if (y_start + h >= static_cast<int>(this->height_)) {
+    if (this->refresh_pixels_ >= this->width_ * this->height_ / 2) {
+      const uint32_t now = millis();
+      if (now - this->last_restart_ms_ >= 500) {
+        this->last_restart_ms_ = now;
+        esp_err_t restart_err = esp_lcd_rgb_panel_restart(this->handle_);
+        if (restart_err != ESP_OK) {
+          ESP_LOGV(TAG, "rgb panel restart skipped: %s", esp_err_to_name(restart_err));
+        }
+      }
+    }
+    this->refresh_pixels_ = 0;
+  }
 }
 
 bool MipiRgb::check_buffer_() {

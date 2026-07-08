@@ -5,25 +5,61 @@
 #ifdef USE_ARTWORK_IMAGE_JPEG_SUPPORT
 #include <jpeglib.h>
 #include <csetjmp>
+#include <cstddef>
+#include <cstdint>
 
 namespace esphome {
 namespace artwork_image {
 
+/// Custom error manager that longjmps instead of calling exit().
+/// The jmp_buf is re-armed by setjmp() at the top of every method that calls
+/// into libjpeg: decode state persists across loop() passes, and a longjmp
+/// into a dead stack frame is undefined behavior.
+struct JpegErrorMgr {
+  jpeg_error_mgr pub;
+  jmp_buf setjmp_buffer;
+  char message[JMSG_LENGTH_MAX];
+};
+
 /**
  * @brief Image decoder specialization for JPEG images.
+ *
+ * The full JPEG must be buffered before decoding starts (libjpeg's mem source
+ * needs the whole file), but the scanline output work is spread across
+ * multiple loop() passes on a time budget. This keeps the main loop
+ * responsive and, more importantly, avoids a single long burst of PSRAM
+ * writes that competes with the RGB panel's DMA scan-out.
  */
 class JpegDecoder : public ImageDecoder {
  public:
   /**
    * @brief Construct a new JPEG Decoder object.
    *
-   * @param display The image to decode the stream into.
+   * @param image The image to decode the stream into.
    */
   JpegDecoder(ArtworkImage *image) : ImageDecoder(image) {}
-  ~JpegDecoder() override {}
+  ~JpegDecoder() override;
 
   int prepare(size_t download_size) override;
   int HOT decode(uint8_t *buffer, size_t size) override;
+  bool is_decoding() const override { return this->decode_started_ && !this->is_finished(); }
+
+ protected:
+  int start_decode_(uint8_t *buffer, size_t size);
+  int decode_scanlines_();
+  void cleanup_();
+
+  jpeg_decompress_struct cinfo_{};
+  JpegErrorMgr jerr_{};
+  uint8_t *row_buffer_{nullptr};
+  size_t source_size_{0};
+  int out_w_{0};
+  int out_h_{0};
+  int y_{0};
+  bool cinfo_created_{false};
+  bool decode_started_{false};
+  bool use_rgb565_{false};
+  bool big_endian_{false};
 };
 
 }  // namespace artwork_image
