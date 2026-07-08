@@ -11,6 +11,17 @@ Supported devices can rotate the display for different mounting orientations (fo
 Current ESPHome releases handle rotation through LVGL (`lvgl.rotation`), including touch input. Older examples that set `touch_swap_xy`, `touch_mirror_x`, or `touch_mirror_y` are no longer needed.
 :::
 
+## Naming convention
+
+`display_rotation` is the runtime screen and touch rotation value. `packages.yaml`
+is the default package file for most devices. A package with a suffix, such as
+`packages-90.yaml`, is a layout preset for a device whose default public install
+uses that mounted orientation.
+
+The JC4880P443 is the main exception: its default browser install and ESPHome
+dashboard example use `packages-90.yaml` for the landscape layout. Its
+`packages.yaml` file remains available for portrait mounts.
+
 ## ESP32-S3 4848S040
 
 The 480×480 square display supports all four rotations.

@@ -13,6 +13,7 @@ This project has moved on to [EspControl](https://jtenniswood.github.io/espcontr
 
 ![Guition ESP32-P4 JC8012P4A1 touchscreen media controller showing album art](./images/guition-esp32-p4-jc8012p4a1-example1.jpg)
 
+<!-- BEGIN GENERATED HOMEPAGE DEVICE LINKS -->
 [Guition ESP32-P4 JC8012P4A1 (10.1")](/devices/esp32-p4-jc8012p4a1)
 
 ![Guition ESP32-S3 4848S040 touchscreen media controller showing album art](./images/guition-esp32-s3-4848s040-example1.jpg)
@@ -26,6 +27,7 @@ This project has moved on to [EspControl](https://jtenniswood.github.io/espcontr
 [Guition ESP32-P4 JC1060P470 (7")](/devices/esp32-p4-jc1060p470)
 
 [Guition ESP32-P4 JC4880P443 (4.3")](/devices/esp32-p4-jc4880p443)
+<!-- END GENERATED HOMEPAGE DEVICE LINKS -->
 
 ## Learn more
 

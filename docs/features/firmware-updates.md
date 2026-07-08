@@ -9,6 +9,8 @@ The device checks for firmware updates automatically and can install them over-t
 
 ![Auto Update Controls](../images/ha-auto-update.png)
 
+![Home Assistant firmware update entity](../images/ha-firmware.png)
+
 ## How it works
 
 The device periodically checks for a new firmware version from the project's GitHub Pages manifest. When an update is available:

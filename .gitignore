@@ -4,6 +4,9 @@ secrets.yaml
 .platformio/
 .uv-cache/
 .cache/
+__pycache__/
+*.pyc
+.worktrees/
 
 # macOS
 .DS_Store
@@ -15,4 +18,5 @@ secrets.yaml
 
 # Docs (VitePress)
 node_modules/
+docs/.vitepress/cache/
 docs/.vitepress/dist/

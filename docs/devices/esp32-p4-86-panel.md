@@ -16,7 +16,7 @@ Click **Install** to flash the firmware directly from your browser. No ESPHome d
 <InstallButton device="p4-86-panel" />
 
 ::: tip
-If you prefer to install via the ESPHome dashboard, see [ESPHome Config](/advanced/esphome-config) (this device uses the `devices/esp32-p4-86-panel` package).
+If you prefer to install via the ESPHome dashboard, see [ESPHome Config](/advanced/esphome-config) (this device uses the `devices/esp32-p4-86-panel/packages.yaml` package).
 :::
 
 ## Rotation

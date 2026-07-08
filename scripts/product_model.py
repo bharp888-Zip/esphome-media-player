@@ -102,6 +102,11 @@ def web_device_profiles() -> dict[str, list[str]]:
     return {
         "esp32_s3": [device.profile for device in devices if device.chip == "ESP32-S3"],
         "screen_rotation": [device.profile for device in devices],
+        "screen_tone": [
+            device.profile
+            for device in devices
+            if "common/addon/warm_tones.yaml" in (ROOT / device.package_path).read_text()
+        ],
         "track_info_duration": [
             device.profile
             for device in devices

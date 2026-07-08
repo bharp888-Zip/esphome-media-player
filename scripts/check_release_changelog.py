@@ -121,10 +121,70 @@ def test_bad_version_and_bad_range_fail() -> None:
         tmp.cleanup()
 
 
+def test_product_device_catalog_is_grouped_with_installation() -> None:
+    commit = release_changelog.Commit(
+        full_hash="abc123",
+        short_hash="abc123",
+        date="2026-07-07",
+        subject="Update product device catalog",
+        files=["product/devices.json"],
+    )
+    assert release_changelog.categorize(commit) == "Supported devices and installation"
+
+
+def test_device_docs_path_beats_generic_docs_keyword() -> None:
+    commit = release_changelog.Commit(
+        full_hash="abc123",
+        short_hash="abc123",
+        date="2026-07-07",
+        subject="Update device docs",
+        files=["docs/devices/esp32-p4-jc1060p470.md"],
+    )
+    assert release_changelog.categorize(commit) == "Supported devices and installation"
+
+
+def test_release_script_path_beats_generic_test_keyword() -> None:
+    commit = release_changelog.Commit(
+        full_hash="abc123",
+        short_hash="abc123",
+        date="2026-07-07",
+        subject="Test firmware release helper",
+        files=["scripts/firmware_release.py"],
+    )
+    assert release_changelog.categorize(commit) == "Firmware releases and updates"
+
+
+def test_subject_keyword_does_not_match_inside_word() -> None:
+    commit = release_changelog.Commit(
+        full_hash="abc123",
+        short_hash="abc123",
+        date="2026-07-07",
+        subject="Understand helper boundaries",
+        files=[],
+    )
+    assert release_changelog.categorize(commit) == release_changelog.FALLBACK_CATEGORY
+
+
+def test_subject_keyword_matches_hyphenated_device_name() -> None:
+    commit = release_changelog.Commit(
+        full_hash="abc123",
+        short_hash="abc123",
+        date="2026-07-07",
+        subject="Fix ESP32-P4 panel startup",
+        files=[],
+    )
+    assert release_changelog.categorize(commit) == "Firmware and device behavior"
+
+
 def main() -> int:
     test_future_release_uses_latest_stable_tag()
     test_existing_tag_uses_previous_stable_tag()
     test_bad_version_and_bad_range_fail()
+    test_product_device_catalog_is_grouped_with_installation()
+    test_device_docs_path_beats_generic_docs_keyword()
+    test_release_script_path_beats_generic_test_keyword()
+    test_subject_keyword_does_not_match_inside_word()
+    test_subject_keyword_matches_hyphenated_device_name()
     print("Release changelog tests passed.")
     return 0
 

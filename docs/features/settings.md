@@ -13,4 +13,11 @@ Some configuration entities may also appear on the Home Assistant device page, d
 
 <SettingsReference />
 
+## Screen Tone
+
+Screen Tone adjusts album-art warmth on supported ESP32-P4 devices. Use the day
+and night warmth settings to keep artwork neutral during the day and warmer at
+night; the same day/night source used by the screen saver controls which value
+is active.
+
 See [Firmware Updates](/features/firmware-updates) for full firmware update behavior.

@@ -23,7 +23,6 @@ from urllib.parse import urljoin
 
 from product_model import Device, default_asset_slugs, device_by_slug, load_devices
 
-
 ROOT = Path(__file__).resolve().parent.parent
 PROJECT_NAME = "jtenniswood.media-player"
 FIRMWARE_NAME = "jtenniswood.media-player"
@@ -156,6 +155,7 @@ def verify_manifest(
     ota_md5: str,
     expected_release_url: str | None = None,
     require_factory: bool = True,
+    expected_chip: str | None = None,
 ) -> dict:
     manifest = load_manifest(manifest_path)
     actual_version = str(manifest.get("version", "")).strip()
@@ -163,10 +163,14 @@ def verify_manifest(
         raise FirmwareReleaseError(f"{manifest_path} version {actual_version!r} does not match {version!r}")
     if actual_version in PLACEHOLDER_STRINGS:
         raise FirmwareReleaseError(f"{manifest_path} contains placeholder version {actual_version}")
+    if manifest.get("name") != FIRMWARE_NAME:
+        raise FirmwareReleaseError(f"{manifest_path} name must be {FIRMWARE_NAME}")
     if manifest.get("home_assistant_domain") != "esphome":
         raise FirmwareReleaseError(f"{manifest_path} home_assistant_domain must be esphome")
 
     build = first_build(manifest, manifest_path)
+    if expected_chip is not None and build.get("chipFamily") != expected_chip:
+        raise FirmwareReleaseError(f"{manifest_path} chipFamily must be {expected_chip}")
     ota = build.get("ota")
     if not isinstance(ota, dict):
         raise FirmwareReleaseError(f"{manifest_path} build has no ota object")
@@ -218,7 +222,16 @@ def verify_files(
     if require_factory:
         require_file(factory, "factory firmware")
 
-    verify_manifest(manifest, slug, version, md5sum(ota), expected_release_url, require_factory=require_factory)
+    device = DEVICE_BY_SLUG.get(slug)
+    verify_manifest(
+        manifest,
+        slug,
+        version,
+        md5sum(ota),
+        expected_release_url,
+        require_factory=require_factory,
+        expected_chip=device.chip if device else None,
+    )
     assert_binary_version(ota, version)
     if factory is not None:
         assert_binary_version(factory, version)
@@ -475,6 +488,20 @@ def cmd_list_slugs(args: argparse.Namespace) -> None:
     print(" ".join(values))
 
 
+def cmd_list_matrix(args: argparse.Namespace) -> None:
+    data = {
+        "include": [
+            {
+                "asset_slug": device.asset_slug,
+                "config": device.config,
+                "chip": device.chip,
+            }
+            for device in DEVICES
+        ]
+    }
+    print(json.dumps(data, separators=(",", ":")))
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -531,6 +558,9 @@ def build_parser() -> argparse.ArgumentParser:
     list_slugs_cmd = sub.add_parser("list-slugs", help="Print configured device slugs")
     list_slugs_cmd.add_argument("--kind", choices=("asset", "web"), default="asset")
     list_slugs_cmd.set_defaults(func=cmd_list_slugs)
+
+    list_matrix_cmd = sub.add_parser("list-matrix", help="Print the GitHub Actions firmware build matrix")
+    list_matrix_cmd.set_defaults(func=cmd_list_matrix)
 
     return parser
 

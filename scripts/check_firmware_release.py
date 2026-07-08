@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from contextlib import redirect_stderr
+from contextlib import redirect_stderr, redirect_stdout
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import io
@@ -252,11 +252,59 @@ def test_wrong_manifest_version_fails() -> None:
         )
 
 
+def test_wrong_manifest_name_fails() -> None:
+    with TemporaryDirectory() as tmp:
+        base = Path(tmp)
+        manifest, factory, ota = make_release_files(base)
+        data = json.loads(manifest.read_text())
+        data["name"] = "example.wrong-firmware"
+        manifest.write_text(json.dumps(data))
+        run_fails(
+            [
+                "verify-files",
+                "--slug",
+                SLUG,
+                "--version",
+                VERSION,
+                "--manifest",
+                str(manifest),
+                "--factory",
+                str(factory),
+                "--ota",
+                str(ota),
+            ]
+        )
+
+
 def test_wrong_md5_fails() -> None:
     with TemporaryDirectory() as tmp:
         base = Path(tmp)
         manifest, factory, ota = make_release_files(base)
         write_image(ota, VERSION, "changed-after-manifest")
+        run_fails(
+            [
+                "verify-files",
+                "--slug",
+                SLUG,
+                "--version",
+                VERSION,
+                "--manifest",
+                str(manifest),
+                "--factory",
+                str(factory),
+                "--ota",
+                str(ota),
+            ]
+        )
+
+
+def test_wrong_manifest_chip_family_fails() -> None:
+    with TemporaryDirectory() as tmp:
+        base = Path(tmp)
+        manifest, factory, ota = make_release_files(base)
+        data = json.loads(manifest.read_text())
+        data["builds"][0]["chipFamily"] = "ESP32-S3" if CHIP == "ESP32-P4" else "ESP32-P4"
+        manifest.write_text(json.dumps(data))
         run_fails(
             [
                 "verify-files",
@@ -363,6 +411,38 @@ def test_public_pages_verification() -> None:
             thread.join(timeout=5)
 
 
+def test_list_matrix_matches_devices() -> None:
+    out = io.StringIO()
+    with redirect_stdout(out):
+        run_ok(["list-matrix"])
+    data = json.loads(out.getvalue())
+    expected = {
+        "include": [
+            {
+                "asset_slug": device.asset_slug,
+                "config": device.config,
+                "chip": device.chip,
+            }
+            for device in firmware_release.DEVICES
+        ]
+    }
+    assert data == expected
+
+
+def test_resolve_device_accepts_public_identifiers() -> None:
+    device = firmware_release.DEVICES[0]
+    assert firmware_release.resolve_device(device.asset_slug) == device
+    assert firmware_release.resolve_device(device.web_slug) == device
+    assert firmware_release.resolve_device(device.config) == device
+
+    try:
+        firmware_release.resolve_device("unknown-device")
+    except firmware_release.FirmwareReleaseError as exc:
+        assert "Unknown device slug" in str(exc)
+        assert device.asset_slug in str(exc)
+    else:
+        raise AssertionError("unknown device slug unexpectedly passed")
+
 def main() -> int:
     test_valid_files_and_directory()
     test_inject_replaces_only_expected_placeholder()
@@ -370,11 +450,15 @@ def main() -> int:
     test_placeholder_fails()
     test_unrelated_placeholder_strings_pass()
     test_wrong_manifest_version_fails()
+    test_wrong_manifest_name_fails()
     test_wrong_md5_fails()
+    test_wrong_manifest_chip_family_fails()
     test_missing_asset_fails()
     test_prepare_pages_generates_missing_manifest()
     test_wrong_slug_path_fails()
     test_public_pages_verification()
+    test_list_matrix_matches_devices()
+    test_resolve_device_accepts_public_identifiers()
     print("Firmware release helper tests passed.")
     return 0
 

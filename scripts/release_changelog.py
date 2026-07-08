@@ -88,7 +88,13 @@ CATEGORIES = (
     ),
     Category(
         "Supported devices and installation",
-        paths=("docs/devices/", "docs/installation.md", "docs/advanced/esphome-config.md"),
+        paths=(
+            "product/devices.json",
+            "scripts/product_model.py",
+            "docs/devices/",
+            "docs/installation.md",
+            "docs/advanced/esphome-config.md",
+        ),
         keywords=("install", "panel", "screen", "stand", "support", "waveshare", "guition"),
     ),
     Category(
@@ -266,10 +272,12 @@ def score_category(commit: Commit, category: Category) -> int:
     subject = commit.subject.lower()
     for path in commit.files:
         for prefix in category.paths:
-            if path == prefix.rstrip("/") or path.startswith(prefix):
-                score += 3
+            if path == prefix.rstrip("/"):
+                score += 20 + len(prefix)
+            elif path.startswith(prefix):
+                score += 10 + len(prefix)
     for keyword in category.keywords:
-        if keyword in subject:
+        if re.search(rf"(?<![a-z0-9]){re.escape(keyword)}(?![a-z0-9])", subject):
             score += 2
     return score
 

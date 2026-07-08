@@ -69,7 +69,7 @@ inline std::string cap_artwork_url(const std::string &url, int max_dim = 600) {
         if (x != std::string::npos) {
           auto sl = cdn_url.rfind('/', x);
           if (sl != std::string::npos) {
-            return cdn_url.substr(0, sl + 1) + dim + cdn_url.substr(bb);
+            return cdn_url.substr(0, sl + 1) + dim + "bb.jpg";
           }
         }
       }
@@ -116,7 +116,7 @@ inline std::string cap_artwork_url(const std::string &url, int max_dim = 600) {
   if (w <= max_dim && h <= max_dim)
     return url;
 
-  return url.substr(0, slash_pos + 1) + dim + url.substr(bb_pos);
+  return url.substr(0, slash_pos + 1) + dim + "bb.jpg";
 }
 
 }  // namespace artwork_image
