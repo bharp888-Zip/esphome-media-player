@@ -31,6 +31,15 @@ esp32:
       # The S3 RGB panel scans from PSRAM while LVGL and artwork decoding also
       # use PSRAM. Recover the LCD DMA at VSYNC if that stream stalls.
       CONFIG_LCD_RGB_RESTART_IN_VSYNC: "y"
+      # Keep the RGB bounce-buffer refill ISR alive while flash writes
+      # (NVS/preferences saves) briefly disable the flash cache. Without these
+      # the scan-out underflows during any flash write and the panel can show
+      # persistent shifted horizontal bands until the next restart.
+      # SPIRAM_FETCH_INSTRUCTIONS/RODATA move code/rodata out of flash so the
+      # cache can keep serving the ISR during those windows.
+      CONFIG_LCD_RGB_ISR_IRAM_SAFE: "y"
+      CONFIG_SPIRAM_FETCH_INSTRUCTIONS: "y"
+      CONFIG_SPIRAM_RODATA: "y"
 
 
 # -----------------------------------------------------------------------------

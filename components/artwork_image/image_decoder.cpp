@@ -112,7 +112,9 @@ size_t DownloadBuffer::read(size_t len) {
     len = this->unread_;
   }
   this->unread_ -= len;
-  if (this->unread_ > 0) {
+  // len == 0 is the incremental-decode idle case; skip the self-memmove,
+  // which would otherwise copy the whole buffer through PSRAM every pass.
+  if (len > 0 && this->unread_ > 0) {
     memmove(this->data(), this->data(len), this->unread_);
   }
   return this->unread_;
@@ -140,6 +142,24 @@ size_t DownloadBuffer::resize(size_t size) {
     this->reset();
     return 0;
   }
+}
+
+size_t DownloadBuffer::shrink_to(size_t size) {
+  if (size == 0 || this->size_ <= size || this->unread_ > size) {
+    return this->size_;
+  }
+  uint8_t *new_buffer = this->allocator_.allocate(size);
+  if (new_buffer == nullptr) {
+    // Keep the existing (larger) buffer rather than losing data.
+    return this->size_;
+  }
+  if (this->unread_ > 0) {
+    memcpy(new_buffer, this->buffer_, this->unread_);
+  }
+  this->allocator_.deallocate(this->buffer_, this->size_);
+  this->buffer_ = new_buffer;
+  this->size_ = size;
+  return size;
 }
 
 }  // namespace artwork_image

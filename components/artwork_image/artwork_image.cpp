@@ -18,8 +18,11 @@
 
 static const char *const TAG = "artwork_image";
 static const char *const CONTENT_TYPE_HEADER_NAME = "content-type";
-static constexpr uint32_t RETIRED_BUFFER_GRACE_MS = 1000;
-static constexpr size_t MAX_RETIRED_BUFFERS = 2;
+// A retired buffer only needs to outlive any in-flight LVGL render pass that
+// may still reference it; holding more buffers for longer doubles peak PSRAM
+// use during rapid album changes.
+static constexpr uint32_t RETIRED_BUFFER_GRACE_MS = 300;
+static constexpr size_t MAX_RETIRED_BUFFERS = 1;
 static constexpr size_t MAX_DOWNLOAD_BUFFER_SIZE = 2 * 1024 * 1024;
 static constexpr int LOCAL_ARTWORK_HTTP_TIMEOUT_MS = 6500;
 
@@ -58,10 +61,17 @@ class LocalHttpContainer : public http_request::HttpContainer {
   }
 
   bool is_read_complete() const override {
-    if (HttpContainer::is_read_complete()) {
+    if (this->client_ == nullptr) {
       return true;
     }
-    return this->is_chunked_ && esp_http_client_is_complete_data_received(this->client_);
+    // The base class treats content_length == 0 as "all bytes read", which
+    // wrongly reports completion immediately for connection-close-delimited
+    // responses (no Content-Length, not chunked). Only trust the byte count
+    // when a real Content-Length was provided; otherwise ask the client.
+    if (!this->is_chunked_ && this->content_length > 0) {
+      return this->bytes_read_ >= this->content_length;
+    }
+    return esp_http_client_is_complete_data_received(this->client_);
   }
 
   void end() override {
@@ -524,6 +534,19 @@ void ArtworkImage::loop() {
     this->finish_download_();
     return;
   }
+  // An incremental decoder (JPEG) spreads scanline output across loop()
+  // passes once the full file is buffered; keep pumping it without touching
+  // the downloader.
+  if (this->decoder_->is_decoding()) {
+    if (!this->decode_buffered_data_()) {
+      this->fail_download_();
+      return;
+    }
+    if (this->decoder_->is_finished()) {
+      this->finish_download_();
+    }
+    return;
+  }
   if (this->downloader_ == nullptr) {
     ESP_LOGE(TAG, "Downloader not instantiated; cannot download");
     return;
@@ -566,6 +589,12 @@ void ArtworkImage::loop() {
     }
     if (this->decoder_->is_finished()) {
       this->finish_download_();
+      return;
+    }
+    if (this->decoder_->is_decoding()) {
+      // Chunked downloads only learn their total size at this edge, so the
+      // incremental decoder may have just produced its first scanlines.
+      // Keep pumping it on subsequent loop() passes instead of failing.
       return;
     }
     ESP_LOGE(TAG, "HTTP transfer finished before image decoder completed");
@@ -1019,6 +1048,10 @@ void ArtworkImage::end_connection_() {
   this->decoder_.reset();
   this->discard_decode_buffer_();
   this->download_buffer_.reset();
+  // The JPEG decoder grows the download buffer to the full file size; give it
+  // back between downloads so each artwork instance doesn't pin its largest
+  // download in PSRAM indefinitely.
+  this->download_buffer_.shrink_to(this->download_buffer_initial_size_);
 }
 
 bool ArtworkImage::validate_url_(const std::string &url) {

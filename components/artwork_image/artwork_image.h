@@ -56,6 +56,11 @@ class ArtworkImage : public PollingComponent,
               image::Transparency transparency, uint32_t buffer_size, bool is_big_endian,
               bool allow_insecure_local_urls);
 
+  // The decoder may hold a pointer into download_buffer_ (libjpeg mem source),
+  // and members destruct in reverse declaration order — which would free the
+  // buffer first. Tear the decoder down explicitly while the buffer is alive.
+  ~ArtworkImage() { this->decoder_.reset(); }
+
   void draw(int x, int y, display::Display *display, Color color_on, Color color_off) override;
 
   void update() override;
