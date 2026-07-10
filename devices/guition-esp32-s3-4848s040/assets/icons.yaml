@@ -19,6 +19,8 @@ font:
       - "\U000F0502"  # mdi-television
       - "\U000F0D38"  # mdi-speaker-multiple
       - "\U000F0156"  # mdi-close
+      - "\U000F04AE"  # mdi-skip-previous
+      - "\U000F04AD"  # mdi-skip-next
   - file: 'https://github.com/Templarian/MaterialDesign-Webfont/raw/v7.4.47/fonts/materialdesignicons-webfont.ttf'
     id: icon_font_small
     size: 24
@@ -37,6 +39,8 @@ font:
 substitutions:
   play:          "\U000F040A"
   pause:         "\U000F03E4"
+  skip_previous:  "\U000F04AE"
+  skip_next:      "\U000F04AD"
   icon_plus:     "\U000F0415"
   icon_minus:    "\U000F0374"
   icon_wifi:     "\U000F05A9"
