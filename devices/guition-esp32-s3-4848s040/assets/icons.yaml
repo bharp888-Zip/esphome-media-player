@@ -35,7 +35,9 @@ font:
     glyphs:
       - "\U000F040A"  # mdi-play
       - "\U000F03E4"  # mdi-pause
-
+      - "\U000F04AE"  # mdi-skip-previous
+      - "\U000F04AD"  # mdi-skip-next
+      
 substitutions:
   play:          "\U000F040A"
   pause:         "\U000F03E4"
