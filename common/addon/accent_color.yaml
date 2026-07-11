@@ -113,6 +113,8 @@ script:
             int br = r * 3 / 4, bg = g * 3 / 4, bb = b * 3 / 4;
             lv_color_t bright_accent = lv_color_make(br, bg, bb);
             lv_obj_set_style_bg_color(id(media_play_pause_button), bright_accent, 0);
+            lv_obj_set_style_bg_color(id(media_prev_button), bright_accent, 0);
+            lv_obj_set_style_bg_color(id(media_next_button), bright_accent, 0);
 
             auto call = id(accent_color_light).turn_on();
             call.set_rgb(r / 255.0f, g / 255.0f, b / 255.0f);
