@@ -195,6 +195,8 @@ text_sensor:
                   - lambda: 'id(artist_has_content) = false;'
                   - lvgl.widget.hide: media_artist_label
                   - lvgl.widget.hide: media_play_pause_button
+                  - lvgl.widget.hide: media_prev_button
+                  - lvgl.widget.hide: media_next_button
                   - lvgl.widget.hide: media_time_label
                   - lvgl.widget.hide: media_progress_bar
                   - lvgl.widget.hide: album_art_background_widget
@@ -224,6 +226,8 @@ text_sensor:
                       then:
                         - lambda: 'id(is_tv_idle) = false;'
                         - lvgl.widget.show: media_play_pause_button
+                        - lvgl.widget.show: media_prev_button
+                        - lvgl.widget.show: media_next_button
                         - lvgl.widget.show: media_time_label
                         - lvgl.widget.show: album_art_background_widget
                         - if:
