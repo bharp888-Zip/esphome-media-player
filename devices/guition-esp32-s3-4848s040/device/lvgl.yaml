@@ -195,57 +195,7 @@ lvgl:
                           lv_obj_clear_flag(id(actions_prompt), LV_OBJ_FLAG_HIDDEN);
                         }
               - logger.log: "Media: play_pause"
-# Skip previous: to the left of play/pause
-        - button:
-            id: media_prev_button
-            align: bottom_right
-            x: -200
-            y: -40
-            width: 65px
-            height: 65px
-            radius: 32
-            styles: control_round
-            widgets:
-              - label:
-                  text_font: icon_font_large
-                  align: center
-                  text: $skip_previous
-                  text_color: 0xFFFFFF
-            on_press:
-              - homeassistant.service:
-                  service: media_player.media_previous_track
-                  data_template:
-                    entity_id: "{{ target }}"
-                  variables:
-                    target: !lambda |-
-                      return id(is_tv_mode) ? id(linked_media_player_entity).state : id(media_player_entity).state;
-              - logger.log: "Media: previous_track"
 
-        # Skip next: to the right of play/pause
-        - button:
-            id: media_next_button
-            align: bottom_right
-            x: 87
-            y: -40
-            width: 65px
-            height: 65px
-            radius: 32
-            styles: control_round
-            widgets:
-              - label:
-                  text_font: icon_font_large
-                  align: center
-                  text: $skip_next
-                  text_color: 0xFFFFFF
-            on_press:
-              - homeassistant.service:
-                  service: media_player.media_next_track
-                  data_template:
-                    entity_id: "{{ target }}"
-                  variables:
-                    target: !lambda |-
-                      return id(is_tv_mode) ? id(linked_media_player_entity).state : id(media_player_entity).state;
-              - logger.log: "Media: next_track"
         # Progress bar: full screen width, at the very bottom of the screen
         - bar:
             id: media_progress_bar
