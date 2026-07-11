@@ -249,14 +249,15 @@ touchscreen:
             }
           }
           // Tap: minimal movement anywhere on screen — toggle UI visibility
-          // Excludes the play/pause button area (x:390-462, y:356-428).
+          // Excludes the play/pause button area (x:385-467, y:351-428) and the
+          // prev/next button area to their left (x:198-352, y:351-428).
           // If screen was dimmed, just wake it (don't hide the UI).
           // Only allow hiding the UI when media is actively playing.
           else if (abs(view_dx) < 20 && abs(view_dy) < 20) {
             int sx = view_x_start;
             int sy = view_y_start;
-            // Ignore taps on the play/pause button
-            if (sx >= 385 && sx <= 467 && sy >= 351 && sy <= 433) {
+            // Ignore taps on the play/pause, prev, and next buttons
+            if (sx >= 198 && sx <= 467 && sy >= 351 && sy <= 433) {
               return;
             }
             if (id(was_screen_dimmed)) {
@@ -334,21 +335,29 @@ script:
             - lvgl.widget.show: accent_overlay
             - lvgl.widget.show: track_info_text
             - lvgl.widget.show: media_play_pause_button
+            - lvgl.widget.show: media_prev_button
+            - lvgl.widget.show: media_next_button
             - lambda: |-
                 if (id(artist_has_content)) lv_obj_clear_flag(id(media_artist_label), LV_OBJ_FLAG_HIDDEN);
                 lv_obj_fade_in(id(accent_overlay), 200, 0);
                 lv_obj_fade_in(id(track_info_text), 200, 0);
                 lv_obj_fade_in(id(media_play_pause_button), 200, 0);
+                lv_obj_fade_in(id(media_prev_button), 200, 0);
+                lv_obj_fade_in(id(media_next_button), 200, 0);
           else:
             - lambda: 'id(is_ui_hidden) = true;'
             - lambda: |-
                 lv_obj_fade_out(id(accent_overlay), 300, 0);
                 lv_obj_fade_out(id(track_info_text), 300, 0);
                 lv_obj_fade_out(id(media_play_pause_button), 300, 0);
+                lv_obj_fade_out(id(media_prev_button), 300, 0);
+                lv_obj_fade_out(id(media_next_button), 300, 0);
             - delay: 400ms
             - lvgl.widget.hide: accent_overlay
             - lvgl.widget.hide: track_info_text
             - lvgl.widget.hide: media_play_pause_button
+            - lvgl.widget.hide: media_prev_button
+            - lvgl.widget.hide: media_next_button
             - lvgl.widget.hide: media_artist_label
   # -- Track navigation (horizontal swipe; allowed when playing or paused) --
   - id: swipe_next_track
@@ -440,6 +449,8 @@ script:
             - lvgl.widget.hide: accent_overlay
             - lvgl.widget.hide: track_info_text
             - lvgl.widget.hide: media_play_pause_button
+            - lvgl.widget.hide: media_prev_button
+            - lvgl.widget.hide: media_next_button
             - lvgl.widget.hide: media_artist_label
             - script.stop: show_track_view
       - if:
@@ -454,6 +465,10 @@ script:
                 if (!id(is_tv_idle)) {
                   lv_obj_clear_flag(id(media_play_pause_button), LV_OBJ_FLAG_HIDDEN);
                   lv_obj_fade_in(id(media_play_pause_button), 200, 0);
+                  lv_obj_clear_flag(id(media_prev_button), LV_OBJ_FLAG_HIDDEN);
+                  lv_obj_fade_in(id(media_prev_button), 200, 0);
+                  lv_obj_clear_flag(id(media_next_button), LV_OBJ_FLAG_HIDDEN);
+                  lv_obj_fade_in(id(media_next_button), 200, 0);
                 }
                 if (id(artist_has_content) && !id(is_tv_idle)) lv_obj_clear_flag(id(media_artist_label), LV_OBJ_FLAG_HIDDEN);
                 lv_obj_fade_in(id(accent_overlay), 200, 0);
@@ -473,6 +488,8 @@ script:
           lv_obj_set_style_bg_color(id(accent_overlay), lv_color_make(0, 0, 0), 0);
           lv_obj_set_style_bg_color(id(artwork_bg_panel), lv_color_make(0, 0, 0), 0);
           lv_obj_set_style_bg_color(id(media_play_pause_button), lv_color_make(0, 0, 0), 0);
+          lv_obj_set_style_bg_color(id(media_prev_button), lv_color_make(0, 0, 0), 0);
+          lv_obj_set_style_bg_color(id(media_next_button), lv_color_make(0, 0, 0), 0);
       - if:
           condition:
             lambda: 'return id(web_settings_active);'
@@ -498,6 +515,8 @@ script:
           then:
             - lambda: 'id(is_tv_idle) = true;'
             - lvgl.widget.hide: media_play_pause_button
+            - lvgl.widget.hide: media_prev_button
+            - lvgl.widget.hide: media_next_button
             - lvgl.widget.hide: media_time_label
             - lvgl.widget.hide: media_progress_bar
             - lvgl.widget.hide: album_art_background_widget
@@ -576,6 +595,8 @@ script:
           then:
             - script.stop: exit_tv_mode
       - lvgl.widget.show: media_play_pause_button
+      - lvgl.widget.show: media_prev_button
+      - lvgl.widget.show: media_next_button
       - lvgl.widget.show: media_time_label
       - lvgl.label.update:
           id: media_title_label
